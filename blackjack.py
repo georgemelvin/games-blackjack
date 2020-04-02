@@ -110,6 +110,8 @@ class BlackjackGame:
 
                 if player.is_bust():
                     return self.end(player_is_bust=True)
+                if player.get_soft_value() == 21 or player.get_hard_value() == 21:
+                    hit=False
 
             elif hit_card == 'n':
                 player.show_hand()
@@ -163,7 +165,7 @@ class BlackjackGame:
         while hit:
             print('Dealing card for dealer...')
             time.sleep(2)
-            
+
             dealer.deal_card(player=dealer)
             # self.dealer_soft_total = dealer.get_soft_value()
             # self.dealer_hard_total = dealer.get_hard_value()
