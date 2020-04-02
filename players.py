@@ -109,7 +109,7 @@ class Player:
         print(f'Player {self.name} has the following cards: \n')
         for card in self.hand.get_cards():
             print(card)
-        print('-' * 10)
+        print('-' * 40)
 
     def is_soft_bust(self):
         return self.hand.is_soft_bust()

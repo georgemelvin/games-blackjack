@@ -12,7 +12,6 @@ class BlackjackGame:
     A class used to represent a game of Blackjack.
 
     Attributes:
-        num_players (int): The number of players in the game.
         num_shuffles (int): The initial number of shuffles by the dealer.
     """
 
@@ -20,13 +19,7 @@ class BlackjackGame:
         self.num_shuffles = num_shuffles
 
         self.dealer = Dealer(name='Dealer')
-        self.dealer_soft_total = 0
-        self.dealer_hard_total = 0
-
         self.player = Player(name='1')
-        self.player_soft_total = 0
-        self.player_hard_total = 0
-
         self.game_over = False
 
     def initial_dealer_shuffle(self):
@@ -79,7 +72,7 @@ class BlackjackGame:
         dealer = self.dealer
         print('Dealer has the following face up card: \n')
         print(dealer.get_face_up())
-        print('-'*20)
+        print('-'*40)
 
     # def is_player_blackjack(self):
     #     player = self.player
@@ -109,8 +102,11 @@ class BlackjackGame:
                 player.show_hand()
 
                 if player.is_bust():
-                    return self.end(player_is_bust=True)
-                if player.get_soft_value() == 21 or player.get_hard_value() == 21:
+                    return self.end(player_total=player.get_hard_value(),
+                                    player_is_bust=True)
+
+                if (player.get_soft_value() == 21
+                        or player.get_hard_value() == 21):
                     hit=False
 
             elif hit_card == 'n':
@@ -125,10 +121,15 @@ class BlackjackGame:
         dealer = self.dealer
 
         if dealer.hand.is_blackjack():
+            print('Blackjack!')
             if player.hand.is_blackjack:
-                return self.end(is_push=True)
+                return self.end(player_total=player_total,
+                                dealer_total=dealer.get_soft_value(),
+                                is_push=True)
             else:
-                return self.end(dealer_wins=True)
+                return self.end(player_total=player_total,
+                                dealer_total=dealer.get_soft_value(),
+                                dealer_wins=True)
 
         if player.hand.is_blackjack():
             while hit:
@@ -140,27 +141,42 @@ class BlackjackGame:
                 dealer.show_hand()
 
                 if dealer.is_bust():
-                    return self.end(dealer_is_bust=True)
+                    return self.end(dealer_total=dealer.get_hard_value(),
+                                    dealer_is_bust=True)
 
-                if (self.dealer_soft_total == 21) \
-                        or (self.dealer_hard_total == 21):
-                    return self.end(is_push=True)
+                if (dealer.dealer_soft_total() == 21
+                        or dealer.dealer_hard_total() == 21):
+                    return self.end(player_total=player_total,
+                                    dealer_total=21,
+                                    is_push=True)
 
         if dealer.get_soft_value() > 17:
             if dealer.get_soft_value() > player_total:
-                return self.end(dealer_wins=True)
+                return self.end(player_total=player_total,
+                                dealer_total=dealer.get_soft_value(),
+                                dealer_wins=True)
             if dealer.get_soft_value() < player_total:
-                return self.end(player_wins=True)
+                return self.end(player_total=player_total,
+                                dealer_total=dealer.get_soft_value(),
+                                player_wins=True)
             if dealer.get_soft_value() == player_total:
-                return self.end(is_push=True)
+                return self.end(player_total=player_total,
+                                dealer_total=dealer.get_soft_value(),
+                                is_push=True)
 
         if dealer.get_hard_value() > 16:
             if dealer.get_hard_value() > player_total:
-                return self.end(dealer_wins=True)
+                return self.end(player_total=player_total,
+                                dealer_total=dealer.get_hard_value(),
+                                dealer_wins=True)
             if dealer.get_hard_value() < player_total:
-                return self.end(player_wins=True)
+                return self.end(player_total=player_total,
+                                dealer_total=dealer.get_hard_value(),
+                                player_wins=True)
             if dealer.get_hard_value() == player_total:
-                return self.end(is_push=True)
+                return self.end(player_total=player_total,
+                                dealer_total=dealer.get_hard_value(),
+                                is_push=True)
 
         while hit:
             print('Dealing card for dealer...')
@@ -172,67 +188,105 @@ class BlackjackGame:
             dealer.show_hand()
 
             if dealer.is_bust():
-                return self.end(dealer_is_bust=True)
+                return self.end(dealer_total=dealer.get_hard_value(),
+                                dealer_is_bust=True)
 
             if not dealer.is_soft_bust() and dealer.get_soft_value() > 17:
                 if dealer.get_soft_value() > player_total:
-                    return self.end(dealer_wins=True)
+                    return self.end(player_total=player_total,
+                                    dealer_total=dealer.get_soft_value(),
+                                    dealer_wins=True)
                 if dealer.get_soft_value() < player_total:
-                    return self.end(player_wins=True)
+                    return self.end(player_total=player_total,
+                                    dealer_total=dealer.get_soft_value(),
+                                    player_wins=True)
                 if dealer.get_soft_value() == player_total:
-                    return self.end(is_push=True)
+                    return self.end(player_total=player_total,
+                                    dealer_total=dealer.get_soft_value(),
+                                    is_push=True)
+
+            if not dealer.is_soft_bust() and dealer.get_hard_value() > 16:
+                if dealer.get_soft_value() > player_total:
+                    return self.end(player_total=player_total,
+                                    dealer_total=dealer.get_soft_value(),
+                                    dealer_wins=True)
+                if dealer.get_soft_value() < player_total:
+                    return self.end(player_total=player_total,
+                                    dealer_total=dealer.get_soft_value(),
+                                    player_wins=True)
+                if dealer.get_soft_value() == player_total:
+                    return self.end(player_total=player_total,
+                                    dealer_total=dealer.get_soft_value(),
+                                    is_push=True)
 
 
             if dealer.is_soft_bust() and dealer.get_hard_value() > 16:
                 if dealer.get_hard_value() > player_total:
-                    return self.end(dealer_wins=True)
+                    return self.end(player_total=player_total,
+                                    dealer_total=dealer.get_hard_value(),
+                                    dealer_wins=True)
                 if dealer.get_hard_value() < player_total:
-                    return self.end(player_wins=True)
+                    return self.end(player_total=player_total,
+                                    dealer_total=dealer.get_hard_value(),
+                                    player_wins=True)
                 if dealer.get_hard_value() == player_total:
-                    return self.end(is_push=True)
+                    return self.end(player_total=player_total,
+                                    dealer_total=dealer.get_hard_value(),
+                                    is_push=True)
 
 
 
 
-    def end(self, is_push=False, player_is_bust=False, dealer_is_bust=False,
+    def end(self, player_total=0, dealer_total=0,
+            is_push=False, player_is_bust=False, dealer_is_bust=False,
             player_wins=False, dealer_wins=False):
 
         if player_is_bust:
+            print(f'Player total: {player_total}')
             print('Player gone bust... House wins!')
             self.game_over = True
             return
 
         if dealer_is_bust:
+            print(f'Dealer total: {dealer_total}')
             print('Dealer gone bust... You win! Congratulations.')
             self.game_over = True
             return
 
         if is_push:
+            print(f'Player total: {player_total}')
+            print(f'Dealer total: {dealer_total}')
             print("Push... At least you didn't lose!")
             self.game_over = True
             return
 
         if player_wins:
+            print(f'Player total: {player_total}')
+            print(f'Dealer total: {dealer_total}')
             print('You win! Congratulations.')
             self.game_over = True
             return
 
         if dealer_wins:
+            print(f'Player total: {player_total}')
+            print(f'Dealer total: {dealer_total}')
             print('You lost... Better luck next time!')
             self.game_over = True
             return
 
-
-if __name__ == '__main__':
+def play():
     # Initialize game of Blackjack
     game = BlackjackGame()
-    print('Welcome to Blackjack... Good luck! \n')
+    print('-'*40)
+    print('Welcome to Blackjack... Good luck!')
+    print('-' * 40)
 
     # Dealer shuffles cards
     game.initial_dealer_shuffle()
 
     # Cards are dealt to Player and Dealer
     game.initial_deal()
+    print('-' * 40)
     game.show_dealer_face_up()
 
     # Player shows their hand
@@ -253,6 +307,12 @@ if __name__ == '__main__':
         print(f'Player total: {player_total}')
         game.show_dealer_hand()
         game.dealer_hit(player_total=player_total)
+
+if __name__ == '__main__':
+    play()
+
+
+
 
 
 
