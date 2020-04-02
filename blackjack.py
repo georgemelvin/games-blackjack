@@ -2,7 +2,7 @@
 @ Author: George Melvin -- george.melvin@gmail.com
 """
 
-import sys
+import time
 
 from players import Player, Dealer
 
@@ -162,7 +162,8 @@ class BlackjackGame:
 
         while hit:
             print('Dealing card for dealer...')
-
+            time.sleep(2)
+            
             dealer.deal_card(player=dealer)
             # self.dealer_soft_total = dealer.get_soft_value()
             # self.dealer_hard_total = dealer.get_hard_value()
@@ -187,6 +188,8 @@ class BlackjackGame:
                     return self.end(player_wins=True)
                 if dealer.get_hard_value() == player_total:
                     return self.end(is_push=True)
+
+
 
 
     def end(self, is_push=False, player_is_bust=False, dealer_is_bust=False,
