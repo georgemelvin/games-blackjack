@@ -2,104 +2,117 @@
 @ Author: George Melvin -- george.melvin@gmail.com
 """
 
-import random
-
-
-SEED = 123
-
-SUITS = ['Clubs',
-         'Diamonds',
-         'Hearts',
-         'Spades']
-VALUES = ['Ace',
-          '2',
-          '3',
-          '4',
-          '5',
-          '6',
-          '7',
-          '8',
-          '9',
-          '10',
-          'Jack',
-          'Queen',
-          'King']
-
-CARD_POINTS = {
-        'Ace': 1,
-          '2': 2,
-          '3': 3,
-          '4': 4,
-          '5': 5,
-          '6': 6,
-          '7': 7,
-          '8': 8,
-          '9': 9,
-          '10': 10,
-          'Jack': 10,
-          'Queen': 10,
-          'King': 10
-}
+from random import shuffle
 
 
 class Card:
     """
+    A class used to represent a playing card.
+
+    Attributes:
+        suit (str): The card's suit.
+        rank (str): The card's rank.
 
     """
 
-    def __init__(self, suit, value):
+    SUITS = ['Clubs',
+             'Diamonds',
+             'Hearts',
+             'Spades']
+    RANKS = ['Ace',
+             '2',
+             '3',
+             '4',
+             '5',
+             '6',
+             '7',
+             '8',
+             '9',
+             '10',
+             'Jack',
+             'Queen',
+             'King']
+    VALUES = {
+        'Ace-lo': 1,
+        '2': 2,
+        '3': 3,
+        '4': 4,
+        '5': 5,
+        '6': 6,
+        '7': 7,
+        '8': 8,
+        '9': 9,
+        '10': 10,
+        'Jack': 10,
+        'Queen': 10,
+        'King': 10,
+        'Ace-hi': 11
+    }
+
+    def __init__(self, suit, rank):
         self.suit = suit
-        self.value = value
+        self.rank = rank
+
+    def __repr__(self):
+        return f'{self.rank} of {self.suit}'
 
     def get_suit(self):
         return self.suit
 
+    def get_rank(self):
+        return self.rank
+
+    def is_ace(self):
+        return self.rank == 'Ace'
+
     def get_value(self):
-        return self.value
+        if self.is_ace():
+            print('Unable to get value - this card is an Ace.')
+            return
+        else:
+            rank = self.get_rank()
+            return self.VALUES[rank]
 
     def echo(self):
-        value = self.value
+        rank = self.rank
         suit = self.suit
-        print(f'{value} of {suit}')
+        print(f'{rank} of {suit}')
 
 
 class Deck:
     """
-
+    A class used to represent a deck of cards.
     """
 
 
     def __init__(self):
-        self.cards = [Card(suit,value) for value in VALUES for suit in SUITS]
+        self.cards = \
+            [Card(suit,value) for value in Card.RANKS for suit in Card.SUITS]
+
+    def is_empty(self):
+        cards = self.cards
+        return not bool(cards)
 
     def get_cards(self):
         return self.cards
 
-    def select(self):
+    def count_cards(self):
+        return len(self.cards)
+
+    def select_card(self):
+        if self.is_empty():
+            print('The deck is empty...!')
+            return
+
         card = self.cards[0]
         self.cards = self.cards[1:]
-        card.echo()
 
         return card
 
-    def insert(self, card):
+    def insert_card(self, card):
         self.cards.append(card)
 
-    def shuffle(self):
-        random.shuffle(self.cards)
+    def shuffle_cards(self):
+        shuffle(self.cards)
 
-
-
-if __name__ == '__main__':
-
-    card = Card('Clubs', 'Jack')
-    card.echo()
-
-    deck = Deck()
-    deck.shuffle()
-
-    for i in range(10):
-        deck.select()
-
-    print(len(deck.get_cards()))
 

@@ -1,0 +1,8 @@
+# Environments
+venv/
+
+# PyCharm
+.idea
+
+# Python binaries
+__pycache__/
